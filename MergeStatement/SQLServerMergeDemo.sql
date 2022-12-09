@@ -1,16 +1,20 @@
 -- SQLSserverMergeDemo.sql
 
-declare @targetRelation as table (
+drop table if exists #TargetRelation;
+
+create table #TargetRelation (
   Id int primary key,
   Val varchar(20)
 );
 
-declare @sourceRelation as table (
+drop table if exists #SourceRelation;
+
+create table #SourceRelation (
   Id int primary key,
   Val varchar(20)
 );
 
-insert into @targetRelation
+insert into #TargetRelation
   (Id, Val)
   values
   (1, 'Value 01'),
@@ -18,7 +22,7 @@ insert into @targetRelation
   (3, 'Value 03'),
   (4, 'Value 04');
 
-insert into @sourceRelation
+insert into #SourceRelation
   (Id, Val)
   values
   (3, 'S Value 03'),
@@ -26,8 +30,8 @@ insert into @sourceRelation
   (5, 'S Value 05'),
   (6, 'S Value 06');
 
-merge into @targetRelation as target
-  using @sourceRelation as source
+merge into #TargetRelation as target
+  using #SourceRelation as source
 	on target.Id = source.Id
 -- matched rows between the target and the source
 when matched then update
@@ -40,4 +44,4 @@ when not matched by target then insert
 when not matched by source then update
   set Val = target.Val + ' not matched';
 
-select * from @targetRelation;
+select * from #TargetRelation;
